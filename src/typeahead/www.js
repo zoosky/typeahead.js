@@ -21,17 +21,30 @@ var WWW = (function() {
     highlight: 'tt-highlight'
   };
 
+  var defaultTemplates = {
+    wrapper: '<span></span>',
+    menu: '<div></div>',
+    dataset: '<div></div>'
+  };
+
   return build;
 
   function build(o) {
-    var www, classes;
+    o = o || {};
+    var www, classes, templates;
 
-    classes = _.mixin({}, defaultClassNames, o);
+    classes = _.mixin({}, defaultClassNames, o.classNames);
+    templates = _.mixin({}, defaultTemplates, o.templates);
 
     www = {
       css: buildCss(),
       classes: classes,
-      html: buildHtml(classes),
+
+      html: {
+        wrapper: function() { return $(templates.wrapper).addClass(classes.wrapper) },
+        menu: function() { return $(templates.menu).addClass(classes.menu) },
+        dataset: function() { return $(templates.dataset).addClass(classes.dataset) }
+      },
       selectors: buildSelectors(classes)
     };
 
@@ -41,13 +54,6 @@ var WWW = (function() {
       classes: www.classes,
       selectors: www.selectors,
       mixin: function(o) { _.mixin(o, www); }
-    };
-  }
-
-  function buildHtml(c) {
-    return {
-      wrapper: '<span class="' + c.wrapper + '"></span>',
-      menu: '<div class="' + c.menu + '"></div>'
     };
   }
 

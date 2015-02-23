@@ -15,6 +15,14 @@
         margin: 50px 0;
       }
 
+      .custom-dropdown {
+        display: none;
+      }
+
+      .custom-dropdown.tt-open {
+        display: block;
+      }
+
       .tt-dropdown-menu {
         background-color: #fff;
         border: 1px solid #000;
@@ -22,6 +30,15 @@
 
       .tt-suggestion.tt-cursor {
         background-color: #ccc;
+      }
+
+      .tt-custom-active {
+        background-color: #999;
+      }
+
+      .tt-custom-dataset {
+        border: 1px solid #eee;
+        padding: 10px;
       }
 
       .triggered-events {
@@ -51,6 +68,10 @@
         <input class="header-footer" type="text" placeholder="header footer">
       </div>
       <div class="typeahead-wrapper">
+        <input class="custom-templating" type="text" placeholder="custom templating">
+        <div class="custom-dropdown"></div>
+      </div>
+      <div class="typeahead-wrapper">
         <input class="ltr" type="text" placeholder="ltr">
       </div>
       <div class="typeahead-wrapper">
@@ -59,7 +80,6 @@
       <div class="typeahead-wrapper">
         <input class="mixed" type="text" placeholder="mixed">
       </div>
-    </div>
     </div>
 
     <script>
@@ -225,6 +245,30 @@
         }
       });
 
+      $('.custom-templating').typeahead({
+        highlight: true,
+        menu: $('.custom-templating + .custom-dropdown'),
+        classNames : {
+          suggestion: 'tt-custom-suggestion',
+          cursor: 'tt-custom-active'
+        },
+        templates: {
+          wrapper: '<div class="tt-custom-wrapper"></div>'
+        }
+      },
+      {
+        source: states,
+        templates: {
+          dataset: '<ul class="tt-custom-dataset"></ul>',
+          header: '<li><h3>start</h3></li>',
+          footer: '<li><h3>end</h3></li>',
+          empty: '<li><h3>empty</h3></li>',
+          suggestion: function(value){
+            return '<li><a href="#">' + value + '</a></li>';
+          }
+        }
+      });
+
       var ltr = new Bloodhound({
         datumTokenizer: function(d) { 
           return Bloodhound.tokenizers.whitespace(d.val); 
@@ -306,7 +350,7 @@
         'typeahead:change',
         'typeahead:select',
         'typeahead:autocomplet',
-        'typeahead:cursorchange',
+        'typeahead:cursorchange'
       ].join(' '), logTypeaheadEvent);
 
       $('form').on('submit', logSubmitEvent);

@@ -27,7 +27,7 @@
       datasets = _.isArray(datasets) ? datasets : [].slice.call(arguments, 1);
 
       o = o || {};
-      www = WWW(o.classNames);
+      www = WWW(o);
 
       return this.each(attach);
 
@@ -35,12 +35,15 @@
         var $input, $wrapper, $hint, $menu, defaultHint, defaultMenu,
             eventBus, input, menu, typeahead, MenuConstructor;
 
-        // highlight is a top-level config that needs to get inherited
-        // from all of the datasets
-        _.each(datasets, function(d) { d.highlight = !!o.highlight; });
+        // highlight & templates.dataset are top-level config that needs to be available
+        // for all of the datasets
+        _.each(datasets, function(d) {
+          d.highlight = !!o.highlight;
+          d.templates = _.mixin({dataset: www.html.dataset()}, d.templates);
+        });
 
         $input = $(this);
-        $wrapper = $(www.html.wrapper);
+        $wrapper = www.html.wrapper();
         $hint = $elOrNull(o.hint);
         $menu = $elOrNull(o.menu);
 
@@ -48,7 +51,7 @@
         defaultMenu = o.menu !== false && !$menu;
 
         defaultHint && ($hint = buildHintFromInput($input, www));
-        defaultMenu && ($menu = $(www.html.menu).css(www.css.menu));
+        defaultMenu && ($menu = www.html.menu().css(www.css.menu));
 
         // hint should be empty on init
         $hint && $hint.val('');
@@ -69,7 +72,7 @@
         MenuConstructor = defaultMenu ? DefaultMenu : Menu;
 
         eventBus = new EventBus({ el: $input });
-        input = new Input({ hint: $hint, input: $input, }, www);
+        input = new Input({ hint: $hint, input: $input }, www);
         menu = new MenuConstructor({
           node: $menu,
           datasets: datasets

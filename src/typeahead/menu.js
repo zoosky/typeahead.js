@@ -29,7 +29,7 @@ var Menu = (function() {
 
     function initializeDataset(oDataset) {
       var node = that.$node.find(oDataset.node).first();
-      oDataset.node = node.length ? node : $('<div>').appendTo(that.$node);
+      oDataset.node = node.length ? node : $(oDataset.templates.dataset).appendTo(that.$node);
 
       return new Dataset(oDataset, www);
     }
