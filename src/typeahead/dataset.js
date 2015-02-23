@@ -33,9 +33,10 @@ var Dataset = (function() {
     this.source = o.source;
     this.displayFn = getDisplayFn(o.display || o.displayKey);
 
+    this.suggestionClass = o.suggestionClass || 'tt-suggestion';
     this.templates = getTemplates(o.templates, this.displayFn);
 
-    this.$el = $(html.dataset.replace('%CLASS%', this.name));
+    this.$el = $(this.templates.dataset).addClass('tt-dataset-' + this.name);
   }
 
   // static methods
@@ -91,7 +92,7 @@ var Dataset = (function() {
       function getSuggestionsHtml() {
         var $suggestions, nodes;
 
-        $suggestions = $(html.suggestions).css(css.suggestions);
+        $suggestions = $(that.templates.suggestions);
 
         // jQuery#append doesn't support arrays as the first argument
         // until version 1.8, see http://bugs.jquery.com/ticket/11231
@@ -109,8 +110,8 @@ var Dataset = (function() {
         function getSuggestionNode(suggestion) {
           var $el;
 
-          $el = $(html.suggestion)
-          .append(that.templates.suggestion(suggestion))
+          $el = $(that.templates.suggestion(suggestion))
+          .addClass(that.suggestionClass)
           .data(datasetKey, that.name)
           .data(valueKey, that.displayFn(suggestion))
           .data(datumKey, suggestion);
@@ -195,6 +196,8 @@ var Dataset = (function() {
       empty: templates.empty && _.templatify(templates.empty),
       header: templates.header && _.templatify(templates.header),
       footer: templates.footer && _.templatify(templates.footer),
+      dataset: templates.dataset || html.dataset,
+      suggestions: templates.suggestions || html.suggestions,
       suggestion: templates.suggestion || suggestionTemplate
     };
 

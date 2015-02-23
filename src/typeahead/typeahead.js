@@ -25,9 +25,10 @@ var Typeahead = (function() {
     this.isActivated = false;
     this.autoselect = !!o.autoselect;
     this.minLength = _.isNumber(o.minLength) ? o.minLength : 1;
-    this.$node = buildDom(o.input, o.withHint);
+    this.$menu = o.dropdown && $(o.dropdown.selector).length ? $(o.dropdown.selector) : $(html.dropdown).css(css.dropdown);
+    this.$node = buildDom(o.input, o.withHint, o.dropdown && o.dropdown.selector ? null : this.$menu);
 
-    $menu = this.$node.find('.tt-dropdown-menu');
+    $menu = this.$menu;
     $input = this.$node.find('.tt-input');
     $hint = this.$node.find('.tt-hint');
 
@@ -56,7 +57,13 @@ var Typeahead = (function() {
 
     this.eventBus = o.eventBus || new EventBus({ el: $input });
 
-    this.dropdown = new Dropdown({ menu: $menu, datasets: o.datasets })
+    this.dropdown = new Dropdown({
+      menu: $menu,
+      suggestionClass: o.dropdown ? o.dropdown.suggestionClass : null,
+      cursorClass: o.dropdown ? o.dropdown.cursorClass : null,
+      datasets: o.datasets,
+      dropdown: o.dropdown
+    })
     .onSync('suggestionClicked', this._onSuggestionClicked, this)
     .onSync('cursorMoved', this._onCursorMoved, this)
     .onSync('cursorRemoved', this._onCursorRemoved, this)
@@ -318,12 +325,11 @@ var Typeahead = (function() {
 
   return Typeahead;
 
-  function buildDom(input, withHint) {
-    var $input, $wrapper, $dropdown, $hint;
+  function buildDom(input, withHint, dropdown) {
+    var $input, $wrapper, $hint;
 
     $input = $(input);
     $wrapper = $(html.wrapper).css(css.wrapper);
-    $dropdown = $(html.dropdown).css(css.dropdown);
     $hint = $input.clone().css(css.hint).css(getBackgroundStyles($input));
 
     $hint
@@ -355,7 +361,7 @@ var Typeahead = (function() {
     .wrap($wrapper)
     .parent()
     .prepend(withHint ? $hint : null)
-    .append($dropdown);
+    .append(dropdown);
   }
 
   function getBackgroundStyles($el) {

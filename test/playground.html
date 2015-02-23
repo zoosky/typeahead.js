@@ -15,13 +15,36 @@
         margin: 50px 0;
       }
 
+      .custom-dropdown {
+        display: none;
+      }
+
       .tt-dropdown-menu {
         background-color: #fff;
         border: 1px solid #000;
       }
 
+      .tt-dropdown-menu.ltr {
+        left: 0;
+        right: auto;
+      }
+
+      .tt-dropdown-menu.rtl {
+        left: auto;
+        right: 0;
+      }
+
       .tt-suggestion.tt-cursor {
         background-color: #ccc;
+      }
+
+      .tt-custom-active {
+        background-color: #999;
+      }
+
+      .tt-custom-dataset {
+        border: 1px solid #eee;
+        padding: 10px;
       }
 
       .triggered-events {
@@ -51,6 +74,10 @@
         <input class="header-footer" type="text" placeholder="header footer">
       </div>
       <div class="typeahead-wrapper">
+      <input class="custom-templating" type="text" placeholder="custom templating">
+      <div class="custom-dropdown"></div>
+    </div>
+      <div class="typeahead-wrapper">
         <input class="ltr" type="text" placeholder="ltr">
       </div>
       <div class="typeahead-wrapper">
@@ -59,7 +86,6 @@
       <div class="typeahead-wrapper">
         <input class="mixed" type="text" placeholder="mixed">
       </div>
-    </div>
     </div>
 
     <script>
@@ -225,6 +251,29 @@
           header: '<h3>start</h3>',
           footer: '<h3>end</h3>',
           empty: '<h3>empty</h3>'
+        }
+      });
+
+      $('.custom-templating').typeahead({
+        highlight: true,
+        dropdown: {
+          selector: '.custom-templating + .custom-dropdown',
+          suggestionClass: 'tt-custom-suggestion',
+          cursorClass: 'tt-custom-active',
+          templates: {
+            wrapper: '<div class="wrapper"</div>'
+          }
+        }
+      },
+      {
+        displayKey: 'val',
+        source: states.ttAdapter(),
+        templates: {
+          dataset: '<div class="tt-custom-dataset"></div>',
+          suggestions: '<ul></ul>',
+          suggestion: function(o){
+            return '<li><a href="#">' + o.val + '</a></li>';
+          }
         }
       });
 

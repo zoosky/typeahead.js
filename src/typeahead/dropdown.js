@@ -22,8 +22,13 @@ var Dropdown = (function() {
 
     this.isOpen = false;
     this.isEmpty = true;
+    this.suggestionClass = o.suggestionClass || 'tt-suggestion';
+    this.cursorClass = o.cursorClass || 'tt-cursor';
 
-    this.datasets = _.map(o.datasets, initializeDataset);
+    this.datasets = _.map(o.datasets, function(dataset) {
+      var options = _.mixin({suggestionClass : that.suggestionClass}, dataset);
+      return new Dataset(options);
+    });
 
     // bound functions
     onSuggestionClick = _.bind(this._onSuggestionClick, this);
@@ -31,9 +36,9 @@ var Dropdown = (function() {
     onSuggestionMouseLeave = _.bind(this._onSuggestionMouseLeave, this);
 
     this.$menu = $(o.menu)
-    .on('click.tt', '.tt-suggestion', onSuggestionClick)
-    .on('mouseenter.tt', '.tt-suggestion', onSuggestionMouseEnter)
-    .on('mouseleave.tt', '.tt-suggestion', onSuggestionMouseLeave);
+    .on('click.tt', '.' + this.suggestionClass, onSuggestionClick)
+    .on('mouseenter.tt', '.' + this.suggestionClass, onSuggestionMouseEnter)
+    .on('mouseleave.tt', '.' + this.suggestionClass, onSuggestionMouseLeave);
 
     _.each(this.datasets, function(dataset) {
       that.$menu.append(dataset.getRoot());
@@ -82,21 +87,21 @@ var Dropdown = (function() {
     },
 
     _getSuggestions: function getSuggestions() {
-      return this.$menu.find('.tt-suggestion');
+      return this.$menu.find('.' + this.suggestionClass);
     },
 
     _getCursor: function getCursor() {
-      return this.$menu.find('.tt-cursor').first();
+      return this.$menu.find('.' + this.cursorClass).first();
     },
 
     _setCursor: function setCursor($el, silent) {
-      $el.first().addClass('tt-cursor');
+      $el.first().addClass(this.cursorClass);
 
       !silent && this.trigger('cursorMoved');
     },
 
     _removeCursor: function removeCursor() {
-      this._getCursor().removeClass('tt-cursor');
+      this._getCursor().removeClass(this.cursorClass);
     },
 
     _moveCursor: function moveCursor(increment) {
@@ -173,7 +178,7 @@ var Dropdown = (function() {
     },
 
     setLanguageDirection: function setLanguageDirection(dir) {
-      this.$menu.css(dir === 'ltr' ? css.ltr : css.rtl);
+      this.$menu.addClass(dir);
     },
 
     moveCursorUp: function moveCursorUp() {
@@ -235,11 +240,4 @@ var Dropdown = (function() {
   });
 
   return Dropdown;
-
-  // helper functions
-  // ----------------
-
-  function initializeDataset(oDataset) {
-    return new Dataset(oDataset);
-  }
 })();
